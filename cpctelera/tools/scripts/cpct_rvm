@@ -250,12 +250,12 @@ configure this script later on."
 ## If current OS is not supported, it prints "norvmurl"
 ##
 function selectRVMURLForCurrentOS {
-   if checkSystem linux32; then
+   if checkSystem win10linux; then
+      echo ${WWW_RVM_WIN64}
+   elif checkSystem linux32; then
       echo ${WWW_RVM_LINUX32}
    elif checkSystem linux64; then
       echo ${WWW_RVM_LINUX64}
-   elif checkSystem win10linux; then
-      echo ${WWW_RVM_WIN64}
    elif checkSystem cygwin32; then
       echo ${WWW_RVM_WIN32}
    elif checkSystem cygwin64; then
@@ -306,6 +306,8 @@ ${COLOR_CYAN} under your ${COLOR_LIGHT_CYAN}CPCtelera${COLOR_CYAN} tools folder 
          rm "$RVM_ZIP"
          if checkSystem osx; then
             setRVMPath "${RVM_DIR}/${RVM_EXE_OSX}"
+         elif checkSystem win10linux; then
+            setRVMPath "${RVM_DIR}/${RVM_EXE}.exe"
          else
             setRVMPath "${RVM_DIR}/${RVM_EXE}"
          fi
@@ -530,8 +532,17 @@ if checkSystem cygwin; then
 fi
 
 # Launch RVM with appropriate path for DSK/SNA file
-if $BACKGROUND; then
-   "${RVM[@]}" "$SHADER" -b="$MACHINE" "$FILEMOD" "$FILEPATH" "$WARPMODE" "$AUTOPLAY" "$EXECUTEFILE" &> /dev/null &
-else 
-   "${RVM[@]}" "$SHADER" -b="$MACHINE" "$FILEMOD" "$FILEPATH" "$WARPMODE" "$AUTOPLAY" "$EXECUTEFILE" &> /dev/null
+if checkSystem win10linux; then
+   RVM=$(wslpath -w ${RVM[@]})
+   if $BACKGROUND; then
+      cmd.exe /C start /B "${RVM[@]}" "$SHADER" -b="$MACHINE" "$FILEMOD" "$FILEPATH" "$WARPMODE" "$AUTOPLAY" "$EXECUTEFILE"
+   else
+      cmd.exe /C "${RVM[@]}" "$SHADER" -b="$MACHINE" "$FILEMOD" "$FILEPATH" "$WARPMODE" "$AUTOPLAY" "$EXECUTEFILE"
+   fi
+else
+   if $BACKGROUND; then
+      "${RVM[@]}" "$SHADER" -b="$MACHINE" "$FILEMOD" "$FILEPATH" "$WARPMODE" "$AUTOPLAY" "$EXECUTEFILE" &> /dev/null &
+   else 
+      "${RVM[@]}" "$SHADER" -b="$MACHINE" "$FILEMOD" "$FILEPATH" "$WARPMODE" "$AUTOPLAY" "$EXECUTEFILE" &> /dev/null
+   fi
 fi
