@@ -406,15 +406,17 @@ if "$AUTOLOADSYMS" && [[ "$SYMS" == "" ]]; then
    done
 fi
 
-# Check prerrequisites and calculated appropriate FILE Path depending on the system
-ensureExecutionPrerequisitesAreInstalled
-FILEPATH=$(getMySystemPath "$FILE")
+if [ -n "$FILE" ]; then
+   # Check prerrequisites and calculated appropriate FILE Path depending on the system
+   ensureExecutionPrerequisitesAreInstalled
+   FILEPATH=$(getMySystemPath "$FILE")
 
-# Check if launch is for SNA file
-EXT=$(echo ${FILEPATH:${#FILEPATH}-3:${#FILEPATH}} | tr /a-z/ /A-Z/)
-if [ "$EXT" = "SNA" ]; then
-   FILEPATH="/SN:$FILEPATH"
-   MODIFIER=""
+   # Check if launch is for SNA file
+   EXT=$(echo ${FILEPATH:${#FILEPATH}-3:${#FILEPATH}} | tr /a-z/ /A-Z/)
+   if [ "$EXT" = "SNA" ]; then
+      FILEPATH="/SN:$FILEPATH"
+      MODIFIER=""
+   fi
 fi
 
 # Launch Winape with appropriate path for DSK/SNA file
